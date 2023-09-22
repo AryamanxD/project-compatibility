@@ -1,0 +1,122 @@
+<?php
+/**
+ * @var $block \Acidgreen\SparePartsLocator\Block\SparePartFinderTool\Form
+ */
+?>
+<form id="spareparts-locator-form" action="<?= $block->getFormUrl(); ?>" method="post" autocomplete="off">
+    <fieldset class="fieldset">
+        <div class="field">
+            <div class="control">
+                <input type="text" name="part_number" id="part_number" value="" placeholder="<?= __('Part Number') ?>" title="<?= __('Part Number') ?>" class="input-text" />
+            </div>
+        </div>
+        <h3 class="text-white">If you dont know the part number use the criteria below:</h3>
+        <div class="field">
+            <div class="control">
+                <select name="welding_helmet_series" id="welding_helmet_series">
+                    <option selected disabled value="" >Select Welding Helmet Series</option>
+                    <?php if($block->getWeldingHelmetSeries()): ?>
+                        <?php foreach($block->getWeldingHelmetSeries() as  $weldingHelmet): ?>
+                            <?php if($weldingHelmet['value']): ?>
+                                <option value="<?= $weldingHelmet['value']?>"><?= $weldingHelmet['label']?></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <select name="spare_part_type" id="spare_part_type">
+                    <option selected disabled value="" >Select Spare Part Type</option>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <select name="spare_part" id="spare_part">
+                    <option selected disabled value="" >Select Spare Part</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+    <div class="my-5 text-center">
+        <button id="submit" type="submit" class="action submit light">Find Part</button>
+    </div>
+</form>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'mage/mage'
+    ], function($){
+
+        var dataForm = $('#spareparts-locator-form');
+        dataForm.mage('validation', {});
+
+        var part_number = $("#part_number");
+        var welding_helmet_series = $("#welding_helmet_series");
+        var spare_part_type = $("#spare_part_type");
+        var spare_part = $("#spare_part");
+
+        welding_helmet_series.on('change',function(e){
+            $.ajax({
+                showLoader: true,
+                url: "/acidgreen_sparepartslocator/ajax/spareparts",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    welding_helmet_series: $(this).val()
+                },
+                complete: function(response) {
+                    spare_part_type.empty();
+                    spare_part_type.append(response.responseJSON.spare_part_type);
+                    //console.log(response.responseJSON.spare_part_type);
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log('Server error. Please try again.');
+                }
+            });
+        });
+
+        spare_part_type.on('change',function(e){
+            $.ajax({
+                showLoader: true,
+                url: "/acidgreen_sparepartslocator/ajax/spareparts",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    spare_part_type : $(this).val(),
+                    welding_helmet_series : welding_helmet_series.val()
+                },
+                complete: function(response) {
+                    spare_part.empty();
+                    spare_part.append(response.responseJSON.spare_part);
+                    //console.log(response.responseJSON.spare_part);
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log('Server error. Please try again.');
+                }
+            });
+        });
+
+
+        dataForm.on('submit',function(e){
+            if(part_number.val() == "" && spare_part.val() == null){
+                part_number.addClass("required-entry");
+            }else{
+                part_number.removeClass("required-entry");
+            }
+
+            if(spare_part.val() != null){
+                welding_helmet_series.addClass("required-entry");
+                spare_part_type.addClass("required-entry");
+                spare_part.addClass("required-entry");
+            }else{
+                welding_helmet_series.removeClass("required-entry");
+                spare_part_type.removeClass("required-entry");
+                spare_part.removeClass("required-entry");
+            }
+        });
+
+    });
+</script>
