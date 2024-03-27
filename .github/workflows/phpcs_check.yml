@@ -1,0 +1,22 @@
+name: Code Checks
+on:
+  push:
+    branches:
+      - module-compatability-assignment
+      
+jobs:
+  code_checks:
+    name: Code Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: intl, zip, mbstring, pdo_mysql
+      - name: Run coding validation
+        uses: allologix/magento2-standards@main
