@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57987e0ea298cf4995cf6030bb901e19",
+    "content-hash": "d756e36585b6e667f427cba5c647eef4",
     "packages": [
         {
             "name": "2tvenom/cborencode",
@@ -50,6 +50,37 @@
                 "source": "https://github.com/2tvenom/CBOREncode/tree/1.0.2"
             },
             "time": "2020-10-27T07:22:41+00:00"
+        },
+        {
+            "name": "aheadworks/module-rbslider",
+            "version": "1.4.5",
+            "dist": {
+                "type": "path",
+                "url": "local-src/Aheadworks_Rbslider",
+                "reference": "0d7239670d89e5c973d8175f71169ba7f56dd97b"
+            },
+            "require": {
+                "magento/framework": ">100.0",
+                "magento/module-backend": ">100.0",
+                "magento/module-store": ">100.0",
+                "php": "~7.3.0||~7.4.0||~8.1.0"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "Aheadworks\\Rbslider\\": ""
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Rich banner slider by Aheadworks",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "amzn/amazon-pay-and-login-magento-2-module",

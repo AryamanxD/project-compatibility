@@ -20,6 +20,7 @@
     },
     "version": "2.4.3",
     "require": {
+        "aheadworks/module-rbslider": "^1.4",
         "hyva-themes/magento2-default-theme": "^1.3",
         "magento/composer-dependency-version-audit-plugin": "~0.1",
         "magento/composer-root-update-plugin": "~1.1",
@@ -98,6 +99,10 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": {
+        "local-src": {
+            "type": "path",
+            "url": "local-src/*"
+        },
         "private-packagist": {
             "type": "composer",
             "url": "https://hyva-themes.repo.packagist.com/humcommerce-com/"
