@@ -1,9 +1,6 @@
-<?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+<?php 
 
-use Magento\Framework\Component\ComponentRegistrar;
+declare (strict_types=1);
+use Magento\Framework\Component\ComponentRegistrar; 
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Humcommerce_HyvaAheadworks', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE , 'Humcommerce_HyvaAheadworks' , __DIR__) ;

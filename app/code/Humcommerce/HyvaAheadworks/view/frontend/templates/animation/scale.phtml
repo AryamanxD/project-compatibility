@@ -1,0 +1,26 @@
+<?php
+declare (strict_types= 1) ;
+// @codingStandardsIgnoreFile
+/** @var $block \Aheadworks\Rbslider\Block\Banner */
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $escaper Magento\Framework\Escaper */
+/** @var ViewModelRegistry $viewModels */
+?>
+
+<style>
+    .uk-slideshow-scale-out{
+        animation: uk-fade-scale-15 0.5s ease-in-out reverse;
+    }
+
+    @keyframes uk-fade-scale-15{
+        0%{
+            opacity: 0;
+            transform: scale(1.5);
+
+        }
+        100%{
+            opacity: 1;
+            transform: scacle(1);
+        }
+    }
+</style>

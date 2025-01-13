@@ -1,0 +1,28 @@
+<style>
+    .uk-slideshow-scroll-forward-in {
+        animation: uk-slide-right 0.5s ease-in-out;
+    }
+
+    .uk-slideshow-scroll-forward-out {
+        animation: uk-slide-left 0.5s ease-in-out reverse;
+    }
+
+    .uk-slideshow-scroll-backward-in {
+        animation: uk-slide-left 0.5s ease-in-out;
+    }
+
+    .uk-slideshow-scroll-backward-out {
+        animation: uk-slide-right 0.5s ease-in-out reverse;
+    }
+
+    @keyframes uk-slide-left {
+        0% { transform: translateX(-100%);}
+        100% {transform: translateX(0);}
+    }
+
+    @keyframes uk-slide-right {
+        0% { transform: translateX(100%);}
+        100% {transform: translateX(0);}
+    }
+
+</style>

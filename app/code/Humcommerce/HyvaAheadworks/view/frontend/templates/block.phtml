@@ -1,13 +1,20 @@
 <?php
-declare(strict_types=1);
-use Aheadworks\Rbslider\Block\Banner;
-use Magento\Framework\Escaper;
+declare (strict_types= 1) ;
+// @codingStandardsIgnoreFile
+/** @var $block \Aheadworks\Rbslider\Block\Banner */
+
+use Aheadworks\Rbslider\Block\Banner ;
+/** @var $escaper Magento\Framework\Escaper */
+use Magento\Framework\Escaper ; 
+/** @var ViewModelRegistry $viewModels */
+$icons = $viewModels->require(\Hyva\Theme\ViewModel\HeroiconsOutline::class)
 ?>
+
 <script>
-    'use strict';
-    function initAwRbslider(config) {
+    'use strict' ;
+    function initAwRbslider(config){
         return {
-        options: Object.assign ({
+            options: Object.assign({
             autoplay: true,
             pauseTimeBetweenTransitions: 3000,
             slideTransitionSpeed: 500,
@@ -16,44 +23,75 @@ use Magento\Framework\Escaper;
             isRandomOrderImage: false,
             sliderListSelector: '.uk-slideshow',
             sliderItemSelector: '.aw-rbslider-item'
-        }, config),
+        } , config ),
 
-        slideshow: {options: {}},
-
+        slideshow : {options:{}} ,
         /**
          * Initialize widget
          */
-        init() {
+        initSlider(){
+            // let self = this;
 
-            /*if (this.options.isRandomOrderImage) {
-                this._randomSort();
+            /*if (self.options.isRandomOrderImage) {
+                self._randomSort();
             }*/
 
-            UIkit.on('init.uk.component', (e, name, data) => {
-                console.log("initialised");
-                if (name === 'slideshow') {
-                    this.loadSlides(data);
-                }
+            // window.addEventListener('initSlider.uk.component', (e, name, data) => {
+            //     if (name === 'slideshow') {
+            //         this.loadSlides(data);
+            //     }
+            // });
+            this.slideshow = window.awRbslider(this.$el, {
+                autoplay: this.options.autoplay,
+                autoplayInterval: this.options.pauseTimeBetweenTransitions,
+                duration: this.options.slideTransitionSpeed,
+                pauseOnHover: this.options.isStopAnimationMouseOnBanner,
+                animation: this.options.animation
             });
 
-            // const slideshow = UIkit.slideshow(this.element, {
-            //     autoplay: this.options.autoplay,
-            //     autoplayInterval: this.options.pauseTimeBetweenTransitions,
-            //     duration: this.options.slideTransitionSpeed,
-            //     pauseOnHover: this.options.isStopAnimationMouseOnBanner,
-            //     animation: this.options.animation
+            this.loadSlides() ;
+            // // Rewrite slideshow resize method
+            this.slideshow.resize = () => this.resizeBanner(this.slideshow , this.$el) ;
+
+            // Disable stop animation, if click on slide navigaton or dot navigation
+            // this.element.on('click.uk.slideshow', '[data-uk-slideshow-item]', function(e) {
+            //     if (this.slideshow.options.autoplay) {
+            //         this.slideshow.start();
+            //     }
             // });
 
-            // Rewrite slideshow resize method
-            this.slideshow.resize = () => this.resizeBanner(this); 
-            // Disable stop animation, if click on slide navigaton or dot navigation
-            this.element.on('click.uk.slideshow', '[data-uk-slideshow-item]', function(e) {
-                if (this.slideshow.options.autoplay) {
-                    this.slideshow.start();
-                }
-            });
-            // Slideshow paused, if mouse cursor on slide navigaton or dot navigation
+            // Array.from(this.$el.querySelectorAll('[data-uk-slideshow-item]')).map(item => {
+            //     item.addEventListener('click.uk.slideshow' , (e) => {
+            //         if(slideshow.options.autoplay){
+            //             slideshow.start() ;
+            //         }
+            //     }) ;
+            // })
 
+
+            // Slideshow paused, if mouse cursor on slide navigation or dot navigation
+            // this.element.on({
+            //     mouseenter: function() {
+            //         if (slideshow.options.pauseOnHover) {
+            //             slideshow.hovering = true;
+            //         }
+            //     },
+            //     mouseleave: function() {
+            //         slideshow.hovering = false;
+            //     }
+            // }, '.uk-dotnav, .uk-slidenav');
+
+            // this.loadSlider() ;
+
+            // const observer = new IntersectionObserver(entries => {
+            //     if(entries[0].isIntersecting){
+            //         this.loadSlider() ;
+            //         observer.disconnect() ;
+            //     }
+            // }) ;
+            // observer.observe(this.$el) ;
+
+            // this.loadSlider() ;
 
             if (this.options.bannerSchedule.length > 0) {
                 if (!this.timeValidator([this.options.bannerSchedule[0]])) {
@@ -63,80 +101,87 @@ use Magento\Framework\Escaper;
                     this.sendRequest(this.options.bannerId);
                 }
             }
-            window.initSlider = () => this.initSlider();
+            window.loadSlider = () => this.loadSlider() ;
         },
-        initSlider() {
-            if(!window.awRbslider) {
-                let callbacks = [];
-                window.awRbslider={'-isLoading': () => callbacks.push(() => this.initSlider())};
-                const script = document.createElement('script');
-                script.src = '<?= $escaper->escapeJs($block->getViewFileUrl('Hyva_AheadworksRbslider/js/components/slideshow.js')); ?>';
+
+        loadSlider(){
+            if(!window.awRbslider){
+                let callbacks = [] ; 
+                window.awRbslider = {'-isloading' : (callback)=> callbacks.push(callback) } ;
+                // setTimeout(() =>{
+                    // } , 3000) ;
+                const script = document.createElement('script') ;
+                script.src = '<?= $escaper->escapeJs($block->getViewFileUrl('Humcommerce_HyvaAheadworks/js/components/slideshow.js')) ?>'
                 script.onload = () => {
-                    callbacks.map(callback=>callback())
-                    callbacks=[];
-                };
-                document.head.append(script);
-                return;
+                    callbacks.map(callback => callback()) ;
+                    callbacks = [] ;
+                }
+                document.head.append(script) ;
             }
-            if(window.awRbslider['-isLoading']) {
-                window.awRbslider['-isLoading']();
+            if(window.awRbslider['-isloading']){
+                window.awRbslider['-isloading'](()=> this.loadSlider()) ;
             }
-            else {
-                console.log('instantiate slider here');
+            if(!window.awRbslider['-isloading']){
+                // console.log('Instantiate slider here') ; 
+                this.initSlider() ; 
             }
         },
 
-        pauseOnEnter() {
-            if(this.slideshow.options.pauseOnHover) {
-                this.slideshow.hovering = true;
-            }
-        },
-        resumeOnLeave() {
+        pauseOnEnter(){
+            if (this.slideshow.options.pauseOnHover) {
+                    this.slideshow.hovering = true;
+                }
+        } , 
+        resumeOnLeave(){
             this.slideshow.hovering = false;
         },
 
         /**
          * Recalculate the width and height of the banner
          */
-        resizeBanner(slideshow, componentRoot) {
-            const mainContent = componentRoot.closest('#maincontent, .page-wrapper');
-                let width,
+        resizeBanner(slideshow) {
+            const mainContent = this.$el.closest('#maincontent, .page-wrapper');
+            let width,
                 height = slideshow.options.height;
 
             // Recalculate width
             if (slideshow.slides.length) {
-                width = slideshow.slides[0].querySelector('img.aw-rbslider__img').naturalWidth;
+                width = (slideshow.slides[0]).querySelector('img.aw-rbslider__img').naturalWidth;
             }
             if (mainContent) {
                 if (mainContent.getBoundingClientRect().width < width) {
-                width = mainContent.getBoundingClientRect().width;
+                    width = mainContent.getBoundingClientRect().width;
                 }
-                componentRoot.style.width = width + 'px';
-            }
+                this.$el.style.width =  width + 'px' ;
+            } 
             // Recalculate height
             if (slideshow.options.height === 'auto' && slideshow.slides.length) {
-                slideshow.slides.style.height = '';
-                height = slideshow.slides[0].getBoundingClientRect().height;
+                slideshow.slides[0].style.height = '' ;
+                height = (slideshow.slides[0]).getBoundingClientRect().height;
                 slideshow.container.style.height = height + 'px';
                 slideshow.slides.map(slide => {
-                    slide.style.height = height + 'px';
-                    slide.style.position = 'absolute';
-                }); 
+                    slide.style.height = height + 'px' ;
+                    slide.style.position = 'position' ;
+                }) ;
+                slideshow.slides.css('height', height);
+                slideshow.slides.css('position', 'absolute');
             }
         },
 
         /**
          * Lazy load slides
          */
-        loadSlides(slideshow) {
-            slideshow.slides.each((index, slideElem) => {
+        loadSlides() {
+            slideshow.slides.forEach((slideElem , index) => {
                 if (index) {
-                    const slideImg = slideElem.querySelector('img.aw-rbslider__img');
+                    const slideImg = (slideElem).querySelector('img.aw-rbslider__img');
                     if (slideImg && slideImg.dataset.src) {
-                        slideImg.addEventListener('load', () => slideImg.classList.add('is-loaded'));
-                        slideImg.src = slideImg.dataset.src;
-                        slideImg.removeAttribute('data-src');
-                        slideImg.attr('data-src', null);
+                        slideImg.addEventListener('load' , ()=>{
+                            slideImg.classList.add('is-loaded') ;
+                        }) ;
+
+                        slideImg.src =slideImg.dataset.src
+                        slideImg.removeAttribute('data-src', null);
                     }
                 }
             });
@@ -147,12 +192,12 @@ use Magento\Framework\Escaper;
          *
          * @param schedule
          */
-        timeValidator: function(schedule) {
-            const currentDateMinute = Date.now() /1000 /60;
-            let isValid=false;
-
-            schedule.forEach(item => {
-                if (currentDateMinute === new Math.floor(Date(item).getTime()/1000/60)) {
+        timeValidator(schedule) {
+            const currentDateMinute = Math.floor(Date.now() / 1000 / 60) ;
+            
+            let isValid = false ;
+            schedule.forEach((item) => {
+                if (currentDate === new Math.floor(Date(item).getTime() / 1000 / 60 )) {
                     isValid = true;
                 }
             });
@@ -166,23 +211,23 @@ use Magento\Framework\Escaper;
          * @param bannerId
          */
         sendRequest(bannerId) {
-    console.log(`Sending request for banner ID: ${bannerId}`);
-    fetch(this.options.cacheCleanUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+            fetch(this.options.cacheCleanUrl, {
+                method : 'post' ,
+                headers : {
+                    contentType : 'application/json'
+                } ,
+                body : JSON.stringify({bannerId}) 
+            });
+            // $.ajax({
+            //     url: self.options.cacheCleanUrl,
+            //     type: 'post',
+            //     async: true,
+            //     dataType: 'json',
+            //     data: {
+            //         'bannerId': bannerId
+            //     }
+            // });
         },
-        body: JSON.stringify({ bannerId }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => console.log('Request successful:', data))
-        .catch(error => console.error('Request failed:', error));
-},
 
         /**
          * Calculate time before send ajax request
@@ -191,7 +236,7 @@ use Magento\Framework\Escaper;
          */
         delayedUpdate(futureTime) {
             const currentDateMinute = Math.floor(Date.now() / 1000 / 60) ;
-            const interval = Math.floor(new Date(futureTime).getTime() / 1000 / 60 ) - currentDateMinute ;
+            const interval = (new Date(futureTime).getTime() / 1000 / 60 ) - currentDateMinute ;
             if (interval.valueOf() > 0) {
                 setTimeout(() =>this.sendRequest(self.options.bannerId) , interval);
             }
@@ -206,36 +251,41 @@ use Magento\Framework\Escaper;
                 sliderItemSelector = this.options.sliderItemSelector;
 
             this.$el.querySelector(sliderListSelector)
-                .innerHTML = Array.from(this.$el.querySelectorAll(sliderListSelector + ' ' + sliderItemSelector)).sort(() => Math.random() - 0.5).map(item => item.outerHTML).join('');
-        }
-    }
+                .innerHTML = Array.from(this.$el.querySelector(sliderListSelector + ' ' + sliderItemSelector))
+                .sort(() => { Math.random()-0.5;})
+                .map(item=> item.outerHTML)
+                .join('') ;
+            }
+        };
     }
 </script>
+
 <?php if ($bannersBlock = $block->getBlocks()): ?>
     <?php foreach ($bannersBlock as $bannerBlock) : ?>
         <?php
             $dotNavItems = '';
             $slideCounter = 1;
-            $sliderConfig = $block->getBannerMageInitParams($bannerBlock)['awRbslider'];
-            var_dump($sliderConfig);
+            $sliderConfig = $block->getBannerMageInitParams($bannerBlock) ;
         ?>
-        <div x-data='initAwRbslider(<?= /* @noEscape */ $block->jsonEncode($sliderConfig) ?>)'
-        x-init="init()" x-intersect.once="initSlider()"
+
+     <?php /** $block->fetchview($block ->getTemplateFile("Humcommerce_HyvaAheadworks::animation/${transition}.phtml")) */ ?> 
+        <div x-data='initAwRbslider(<?= /* @noEscape */ $block->jsonEncode($block->getBannerMageInitParams($bannerBlock)) ?>)'
+            x-intersect = "loadSlider()" 
              data-aw-rbslider-banner-id='<?= /* @noEscape */ $bannerBlock->getBanner()->getId(); ?>'
-             class="aw-rbslider-container uk-slidenav-position">
+             class="aw-rbslider-container uk-slidenav-position relative group">
             <div class="uk-slideshow uk-overlay-active">
                 <?php foreach ($bannerBlock->getSlides() as $key => $slide) : ?>
-                    <div class="aw-rbslider-item">
+                    <div class="aw-rbslider-item absolute" style="opacity: <?= $slideCounter === 1 ? '1' : '0' ?>">
                         <div class="aw-rbslider-img-wrapper">
                             <picture>
                                 <source media="(max-width: 480px)" srcset="<?= /* @noEscape */ $block->getSlideMobileImgUrl($slide) ?>"
                                         class="aw-rbslider__img  <?= $slideCounter === 1 ? 'is-loaded' : '' ?>"
                                         <?= $slideCounter !== 1 ? 'data-' : '' ?>
-                                        title="<?= $block->escapeHtml($slide->getImgTitle()) ?>" />
+                                        title="<?= $escaper->escapeHtml($slide->getImgTitle()) ?>" />
                                 <img class="aw-rbslider__img  <?= $slideCounter === 1 ? 'is-loaded' : '' ?>"
                                      <?= $slideCounter !== 1 ? 'data-' : '' ?>src="<?= /* @noEscape */ $block->getSlideImgUrl($slide) ?>"
-                                     title="<?= $block->escapeHtml($slide->getImgTitle()) ?>"
-                                     alt="<?= $block->escapeHtml($slide->getImgAlt()) ?>" />
+                                     title="<?= $escaper->escapeHtml($slide->getImgTitle()) ?>"
+                                     alt="<?= $escaper->escapeHtml($slide->getImgAlt()) ?>" />
                             </picture>
                             <?php if ($slide->getUrl()): ?>
                                 <?php
@@ -244,45 +294,62 @@ use Magento\Framework\Escaper;
                                 ?>
                                 <a href="<?= /* @noEscape */ $slide->getUrl() ?>"
                                    class="aw-rbslider-img-url"
-                                   data-mage-init='<?= /* @noEscape */ $block->jsonEncode($block->getSendClickStatisticsMageInitParams($bannerBlock->getBanner(), $slide)) ?>'
+                                   data-mage-initSlider='<?= /* @noEscape */ $block->jsonEncode($block->getSendClickStatisticsMageInitParams($bannerBlock->getBanner(), $slide)) ?>'
                                     <?= /* @noEscape */ $target ?>
                                     <?= /* @noEscape */ $nofollow ?>></a>
                             <?php endif; ?>
                             <?php if ($content = $slide->getContent()): ?>
-                                <div class="aw-rbslider-content-wrapper uk-overlay-panel uk-flex uk-flex-center uk-flex-middle uk-text-center">
-                                    <div>
+                                <div class="aw-rbslider-content-wrapper uk-overlay-panel absolute top-0 w-full h-full flex justify-center items-center">
+                                    <div class="prose">
                                         <?= /* @noEscape */ $content ?>
                                     </div>
                                 </div>
                             <?php endif; ?>
                         </div>
                     </div>
-                    <?php $dotNavItems .= '<li data-uk-slideshow-item="' . $key . '" x-on:[click.uk.slideshow]="slideshow.options.autoplay && slideshow.start()"><a href="#"></a></li>' ?>
+                    <?php $dotNavItems .= '<li data-uk-slideshow-item="' . $key . '"
+                                            @click.prevent = "slideshow.show('. $key .')"
+                                        ><a href="#" class="w-3 h-3 block bg-white mx-2 rounded-lg opacity-0 group:hover:opacity-50 hover:!opacity-80 transition-opacity duration-500" ></a></li>' ?>
                     <?php $slideCounter++; ?>
+                    <!-- x-on:[click.uk.slideshow] ="slideshow.options.autoplay && slideshow.start()" -->
                 <?php endforeach; ?>
             </div>
             <?php if (count($bannerBlock->getSlides()) > 1): ?>
+            <div class="flex absolute top-0 text-white justify-between items-center w-full h-full">
                 <?php if ($bannerBlock->getBanner()->getDisplayArrows()) : ?>
                     <a href="#"
-                       class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous"
-                       @mouseenter="pauseOnEnter" @mouseleave="resumeOnLeave"
-                       x-on:[click.uk.slideshow]="slideshow.options.autoplay && slideshow.start()"
+                       class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous w-16 h-16 
+                       opacity-0 group-hover:opacity-50 hover:!opacity-80 transition-opacity duration-500"
+                       @mouseenter = "pauseOnEnter" @mouseleave = "resumeOnLeave"
+                       @click.prevent = "slideshow.previous()"
                        data-uk-slideshow-item="previous">
-                        <span class="visually-hidden"><?= $block->escapeHtml(__('Show previous slide')) ?></span>
-                    </a>
-                    <a href="#"
-                       class="uk-slidenav uk-slidenav-contrast uk-slidenav-next"
-                       @mouseenter="pauseOnEnter" @mouseleave="resumeOnLeave"
-                       x-on:[click.uk.slideshow]="slideshow.options.autoplay && slideshow.start()"
-                       data-uk-slideshow-item="next">
-                        <span class="visually-hidden"><?= $block->escapeHtml(__('Show next slide')) ?></span>
+                       <?= $icons->chevronLeftHtml('w-full h-full not-sr-only') ?>
+                        <span class="sr-only">
+                            <?= $escaper->escapeHtml(__('Show previous slide')) ?>
+                        </span>
                     </a>
                 <?php endif; ?>
                 <?php if ($bannerBlock->getBanner()->getDisplayBullets()) : ?>
-                    <ul class="uk-dotnav uk-dotnav-contrast uk-position-bottom uk-flex-center" @mouseenter="pauseOnEnter" @mouseleave="resumeOnLeave">
+                    <ul class="uk-dotnav self-end mb-4"
+                       @mouseenter = "pauseOnEnter" @mouseleave = "resumeOnLeave"
+                       >
                         <?= /* @noEscape */  $dotNavItems ?>
                     </ul>
                 <?php endif; ?>
+                <?php if ($bannerBlock->getBanner()->getDisplayArrows()) : ?>
+                    <a href="#"
+                       class="uk-slidenav uk-slidenav-contrast uk-slidenav-next w-16 h-16 
+                       opacity-0 group-hover:opacity-50 hover:!opacity-80 transition-opacity duration-500"
+                       @mouseenter = "pauseOnEnter" @mouseleave = "resumeOnLeave"
+                       @click.prevent = "slideshow.previous()"
+                       data-uk-slideshow-item="next">
+                       <?= $icons->chevronRightHtml ?>
+                        <span class="sr-only">
+                            <?= $escaper->escapeHtml(__('Show next slide')) ?>
+                        </span>
+                    </a>
+                <?php endif; ?>
+            </div>
             <?php endif; ?>
         </div>
     <?php endforeach; ?>
